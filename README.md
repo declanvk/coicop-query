@@ -1,2 +1,3 @@
 # coicop-query
-TOol for querying COICOP categories
+
+Tool for querying COICOP categories
