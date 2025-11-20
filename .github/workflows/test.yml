@@ -3,7 +3,7 @@ name: Test
 on:
   push:
     branches:
-     - main
+      - main
   pull_request:
     branches:
       - main
@@ -29,7 +29,7 @@ jobs:
         run: uv run ruff check
 
       - name: Bake sqlite database
-        run: ./scripts/bake.py
+        run: ./scripts/bake.py --verbose
 
       - name: Build
         run: uv build
