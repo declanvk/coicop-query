@@ -1,6 +1,6 @@
 from io import TextIOWrapper
 import logging
-from .utils import get_db_path, get_coicop_data_path, get_sqlite_conn
+from .utils import get_coicop_data_path, get_sqlite_conn, unsafe_get_db_path
 import sqlite3
 import argparse
 import os
@@ -10,30 +10,30 @@ LOG = logging.getLogger(__name__)
 
 
 def run(_args: argparse.Namespace):
-    with get_db_path() as db_path:
-        LOG.info(f"Initializing database at path [{db_path}]")
+    db_path = unsafe_get_db_path()
+    LOG.info(f"Initializing database at path [{db_path}]")
 
-        if db_path.exists():
-            LOG.info(f"Database already exists at [{db_path}], going to delete")
-            os.remove(db_path)
+    if db_path.exists():
+        LOG.info(f"Database already exists at [{db_path}], going to delete")
+        os.remove(db_path)
 
-        if not db_path.parent.exists():
-            LOG.info(
-                f"Database path parent directory [{db_path.parent}] does not exist, creating it."
-            )
-            db_path.parent.mkdir(parents=True)
+    if not db_path.parent.exists():
+        LOG.info(
+            f"Database path parent directory [{db_path.parent}] does not exist, creating it."
+        )
+        db_path.parent.mkdir(parents=True)
 
-        conn = get_sqlite_conn(db_path, LOG.debug, readonly=False)
+    conn = get_sqlite_conn(db_path, LOG.debug, readonly=False)
 
-        with (
-            conn,
-            get_coicop_data_path() as coicop_path,
-            coicop_path.open("r") as coicop_csv_file,
-        ):
-            create_coicop_categories_table(conn)
-            load_categories_into_table(conn, coicop_csv_file)
+    with (
+        conn,
+        get_coicop_data_path() as coicop_path,
+        coicop_path.open("r") as coicop_csv_file,
+    ):
+        create_coicop_categories_table(conn)
+        load_categories_into_table(conn, coicop_csv_file)
 
-        conn.close()
+    conn.close()
 
 
 def create_coicop_categories_table(conn: sqlite3.Connection):

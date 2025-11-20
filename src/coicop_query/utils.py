@@ -13,9 +13,16 @@ from . import resources
 LOG = logging.getLogger(__name__)
 
 
+DATABASE_FILE_NAME = "db.sqlite"
+
+
+def unsafe_get_db_path() -> Path:
+    return Path(__file__).parent / "resources" / DATABASE_FILE_NAME
+
+
 def get_db_path() -> ContextManager[Path]:
-    if importlib.resources.is_resource(resources, "db.sqlite"):
-        return importlib.resources.path(resources, "db.sqlite")
+    if importlib.resources.is_resource(resources, DATABASE_FILE_NAME):
+        return importlib.resources.path(resources, DATABASE_FILE_NAME)
     else:
         raise Exception(
             "Database resource missing from package. Need to bake data prior to using package, see README.md"
