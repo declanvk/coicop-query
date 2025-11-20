@@ -3,5 +3,13 @@ name = "coicop-query"
 version = "0.1.0"
 description = "Tool for querying COICOP categories"
 readme = "README.md"
+authors = [{ name = "Declan Kelly", email = "dkelly.home@gmail.com" }]
 requires-python = ">=3.12"
 dependencies = []
+
+[project.scripts]
+coicop = "coicop_query:main"
+
+[build-system]
+requires = ["uv_build>=0.8.12,<0.9.0"]
+build-backend = "uv_build"
