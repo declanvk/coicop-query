@@ -6,7 +6,11 @@ LOG = logging.getLogger(__name__)
 
 
 def args(subcommands: argparse._SubParsersAction):
-    get_parser = subcommands.add_parser("get", help="lookup COICOP category by code")
+    get_parser = subcommands.add_parser(
+        "get",
+        help="lookup COICOP category by code",
+        description="Lookup COICOP category by code.",
+    )
     get_parser.add_argument("code")
 
 

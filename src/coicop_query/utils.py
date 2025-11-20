@@ -65,6 +65,8 @@ PRINT_MANDATORY_CATEGORY_COLUMNS = {
     "title",
 }
 assert PRINT_MANDATORY_CATEGORY_COLUMNS.issubset(CATEGORY_COLUMNS)
+NON_PRINTED_CATEGORY_COLUMNS = {"level", "id"}
+assert NON_PRINTED_CATEGORY_COLUMNS.issubset(CATEGORY_COLUMNS)
 
 
 def print_many_coicop_categories(rows: list[sqlite3.Row]):
@@ -92,7 +94,9 @@ def print_many_coicop_categories(rows: list[sqlite3.Row]):
         )
 
     needs_separator = True
-    if PRINT_MANDATORY_CATEGORY_COLUMNS == present_columns:
+    if PRINT_MANDATORY_CATEGORY_COLUMNS == (
+        present_columns - NON_PRINTED_CATEGORY_COLUMNS
+    ):
         needs_separator = False
 
     is_first = True

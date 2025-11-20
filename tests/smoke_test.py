@@ -1,7 +1,9 @@
 from coicop_query import get_cmd, query_cmd
 import argparse
 
+print("Running `coicop get 02`...")
 get_cmd.run(argparse.Namespace(code="02"))
+print('\nRunning `coicop query ... \'"video game" AND "consoles"\'`...')
 query_cmd.run(
     argparse.Namespace(
         query='"video game" AND "consoles"',
