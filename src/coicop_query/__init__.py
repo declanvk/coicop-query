@@ -3,6 +3,7 @@ import logging
 
 from . import bake_cmd
 from . import get_cmd
+from . import query_cmd
 
 LOG = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ def main() -> None:
     parser.add_argument("--verbose", action="store_true")
     subcommands = parser.add_subparsers(required=True, dest="command")
     get_cmd.args(subcommands)
+    query_cmd.args(subcommands)
 
     args = parser.parse_args()
 
@@ -34,6 +36,8 @@ def main() -> None:
 
     if args.command == "get":
         get_cmd.run(args)
+    elif args.command == "query":
+        query_cmd.run(args)
     else:
         raise Exception(f"Unrecognized subcommand [{args.command}]")
 

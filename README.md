@@ -7,7 +7,7 @@ Tool for querying COICOP categories
 This tool bakes an sqlite database into the package structure. In order to initialize that value, you must run
 
 ```bash
-uv run python -c "import coicop_query; import sys; sys.exit(coicop_query.bake());" --verbose
+./scripts/bake.py
 ```
 
-ahead of running or building or publishing the command.
+ahead of running or building or publishing the `coicop-query`.
