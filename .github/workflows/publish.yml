@@ -37,5 +37,5 @@ jobs:
       - name: Smoke test (source distribution)
         run: uv run --isolated --no-project --with dist/*.tar.gz tests/smoke_test.py
 
-      - name: Publish
-        run: uv publish
+      - name: Publish (dryrun)
+        run: echo "uv publish"
