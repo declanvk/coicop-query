@@ -1,6 +1,7 @@
 import logging
 import argparse
 from .utils import (
+    NON_PRINTED_CATEGORY_COLUMNS,
     PRINT_MANDATORY_CATEGORY_COLUMNS,
     get_db_path,
     get_sqlite_conn,
@@ -13,7 +14,12 @@ LOG = logging.getLogger(__name__)
 
 def args(subcommands: argparse._SubParsersAction):
     query_parser = subcommands.add_parser(
-        "query", help="query COICOP category via database full-text search"
+        "query",
+        help="query COICOP category via database full-text search",
+        description=f"""Query COICOP category via database full-text search. 
+        The set of columns that are available for sort are {sorted(CATEGORY_COLUMNS)}. 
+        The same set of columns are available for select, but only the following columns 
+        will be printed: {sorted(CATEGORY_COLUMNS - NON_PRINTED_CATEGORY_COLUMNS)}""",
     )
     assert isinstance(query_parser, argparse.ArgumentParser)
     query_parser.add_argument(
@@ -102,10 +108,10 @@ def validate_column_names(select: str, required_columns: set[str]) -> str:
 
 
 def build_fts_query(args: argparse.Namespace) -> str:
-    count = max(find_maximum_single_quote_run(args.query), 1)
-    quote_str = "'" * count
+    """Create the FTS query by adding single quotes around the CLI input.
 
-    return f"{quote_str}{args.query}{quote_str}"
+    This procedure is vulnerable to SQL injection, but the impact is limited, the user is only breaking their own installed software."""
+    return f"'{args.query.strip("'")}'"
 
 
 def build_sort_clause(args: argparse.Namespace) -> str:
@@ -122,7 +128,7 @@ def build_sort_clause(args: argparse.Namespace) -> str:
 
         if name not in CATEGORY_COLUMNS:
             raise Exception(f"Unknown column name [{name}] in sort argument")
-        if order not in {"ASC", "DESC"}:
+        if order.upper() not in {"ASC", "DESC"}:
             raise Exception(f"Unknown column order [{order}] in sort argument")
 
         sort_columns[name] = order
@@ -130,10 +136,3 @@ def build_sort_clause(args: argparse.Namespace) -> str:
     return (
         f"ORDER BY {', '.join(f'{name} {sort_columns[name]}' for name in sort_columns)}"
     )
-
-
-def find_maximum_single_quote_run(s: str) -> int:
-    if "'" in s:
-        return 1
-    else:
-        return 0
