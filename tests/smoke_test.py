@@ -12,5 +12,18 @@ query_cmd.run(
         limit=10,
         select="code,title,intro",
         sort="level:DESC,code:ASC",
+        excludes_query=None,
+    )
+)
+print('\nRunning `coicop query "alcoholic" --excludes-query "food"`...')
+query_cmd.run(
+    argparse.Namespace(
+        query="alcoholic",
+        select="code,title,excludes",
+        max_level=None,
+        min_level=None,
+        limit=None,
+        sort=None,
+        excludes_query="food",
     )
 )
