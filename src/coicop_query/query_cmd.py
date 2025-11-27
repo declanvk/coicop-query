@@ -51,6 +51,11 @@ def args(subcommands: argparse._SubParsersAction):
             the column name. Example would be 'title:ASC,code:DESC' to sort first by title \
             ascending and then by code descending.",
     )
+    query_parser.add_argument(
+        "--excludes-query",
+        type=str,
+        help="Query for categories by searching the 'excludes' contents",
+    )
     query_parser.add_argument("query")
 
 
@@ -74,6 +79,11 @@ def build_query(args: argparse.Namespace) -> str:
     where_clauses = [
         f"id IN (SELECT rowid FROM category_fts WHERE category_fts MATCH {fts_query})"
     ]
+    if args.excludes_query:
+        excludes_fts_query = build_excludes_fts_query(args)
+        where_clauses.append(
+            f"id IN (SELECT rowid FROM category_excludes_fts WHERE category_excludes_fts MATCH {excludes_fts_query})"
+        )
     if args.max_level is not None:
         where_clauses.append(f"level <= {args.max_level}")
     if args.min_level is not None:
@@ -106,6 +116,13 @@ def validate_column_names(select: str, required_columns: set[str]) -> str:
     if not required_columns.issubset(columns):
         columns.update(required_columns)
     return ", ".join(columns)
+
+
+def build_excludes_fts_query(args: argparse.Namespace) -> str:
+    """Create the FTS query by adding single quotes around the CLI input.
+
+    This procedure is vulnerable to SQL injection, but the impact is limited, the user is only breaking their own installed software."""
+    return f"'{args.excludes_query.strip("'")}'"
 
 
 def build_fts_query(args: argparse.Namespace) -> str:
