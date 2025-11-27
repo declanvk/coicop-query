@@ -8,6 +8,7 @@ from .utils import (
     print_many_coicop_categories,
     CATEGORY_COLUMNS,
 )
+from .exceptions import CoicopQueryError
 
 LOG = logging.getLogger(__name__)
 
@@ -98,7 +99,7 @@ def validate_column_names(select: str, required_columns: set[str]) -> str:
     columns = set(select.split(","))
     assert isinstance(columns, set)
     if not columns.issubset(CATEGORY_COLUMNS):
-        raise Exception(
+        raise CoicopQueryError(
             f"'--select' argument referenced unknown column name(s) {columns - CATEGORY_COLUMNS}"
         )
 
@@ -127,9 +128,9 @@ def build_sort_clause(args: argparse.Namespace) -> str:
             order = "ASC"
 
         if name not in CATEGORY_COLUMNS:
-            raise Exception(f"Unknown column name [{name}] in sort argument")
+            raise CoicopQueryError(f"Unknown column name [{name}] in sort argument")
         if order.upper() not in {"ASC", "DESC"}:
-            raise Exception(f"Unknown column order [{order}] in sort argument")
+            raise CoicopQueryError(f"Unknown column order [{order}] in sort argument")
 
         sort_columns[name] = order
 

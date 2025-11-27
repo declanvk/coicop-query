@@ -1,6 +1,7 @@
 import argparse
 import logging
 from .utils import get_sqlite_conn, get_db_path, print_coicop_category
+from .exceptions import CategoryNotFoundError
 
 LOG = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ def run(args: argparse.Namespace):
             cur = conn.execute("SELECT * FROM category WHERE code = ?;", (args.code,))
             result = cur.fetchone()
             if result is None:
-                raise Exception(f"No category found for code [{args.code}]")
+                raise CategoryNotFoundError(f"No category found for code [{args.code}]")
             print_coicop_category(result)
 
         conn.close()
