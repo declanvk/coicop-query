@@ -1,9 +1,11 @@
 import argparse
 import logging
+import sys
 
 from . import bake_cmd
 from . import get_cmd
 from . import query_cmd
+from .exceptions import CoicopQueryError
 
 LOG = logging.getLogger(__name__)
 
@@ -34,12 +36,16 @@ def main() -> None:
 
     LOG.info(args)
 
-    if args.command == "get":
-        get_cmd.run(args)
-    elif args.command == "query":
-        query_cmd.run(args)
-    else:
-        raise Exception(f"Unrecognized subcommand [{args.command}]")
+    try:
+        if args.command == "get":
+            get_cmd.run(args)
+        elif args.command == "query":
+            query_cmd.run(args)
+        else:
+            raise CoicopQueryError(f"Unrecognized subcommand [{args.command}]")
+    except CoicopQueryError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 def init_logging(verbose: bool):

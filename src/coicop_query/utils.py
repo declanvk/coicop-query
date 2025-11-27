@@ -8,6 +8,7 @@ import shutil
 import textwrap
 
 from . import resources
+from .exceptions import CoicopQueryError
 
 
 LOG = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ def get_db_path() -> ContextManager[Path]:
     if importlib.resources.is_resource(resources, DATABASE_FILE_NAME):
         return importlib.resources.path(resources, DATABASE_FILE_NAME)
     else:
-        raise Exception(
+        raise CoicopQueryError(
             "Database resource missing from package. Need to bake data prior to using package, see README.md"
         )
 
@@ -89,7 +90,7 @@ def print_many_coicop_categories(rows: list[sqlite3.Row]):
     )
     LOG.info(f"Present columns {present_columns}")
     if not PRINT_MANDATORY_CATEGORY_COLUMNS.issubset(present_columns):
-        raise Exception(
+        raise CoicopQueryError(
             f"Missing some print mandatory columns from query: {PRINT_MANDATORY_CATEGORY_COLUMNS - present_columns}"
         )
 
@@ -115,7 +116,7 @@ def print_horizontal_rule(char="-"):
     print(char * width)
 
 
-def print_coicop_category(row: sqlite3.Row) -> bool:
+def print_coicop_category(row: sqlite3.Row):
     width = get_terminal_width()
     LOG.debug(f"Raw row {dict(row)}")
     left_column = 14
